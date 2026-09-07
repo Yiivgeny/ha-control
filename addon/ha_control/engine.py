@@ -203,7 +203,9 @@ class Engine:
         decoded = unquote(parsed.path)
         if parsed.scheme or parsed.netloc or not operation.startswith("/") or operation.startswith("//") or "\\" in decoded or any(p in {".", ".."} for p in decoded.split("/")):
             raise ControlError("invalid_path", "HTTP operation must be an origin-relative path without dot segments.")
-        headers = {"Accept": "application/json"}
+        # This generic transport decodes JSON, text and binary responses. A JSON
+        # preference rejects Supervisor journal endpoints before logs are read.
+        headers = {"Accept": "*/*"}
         if transport == "rest":
             base, token = self.ha_url, self.ha_token
         elif transport == "supervisor":

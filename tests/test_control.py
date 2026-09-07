@@ -117,6 +117,14 @@ class HTTPTests(unittest.IsolatedAsyncioTestCase):
         self.calls = []
         async def handler(request):
             self.calls.append(request.path)
+            if request.path == "/core/logs":
+                if request.headers.get("Accept") not in {None, "text/plain", "text/x-log", "*/*"}:
+                    return web.Response(status=400, text="Invalid content type requested. Only text/plain and text/x-log supported for now.")
+                if request.headers.get("Authorization") != "Bearer test-secret":
+                    raise web.HTTPUnauthorized()
+                return web.Response(text="Core started\nprivate=test-secret\n", content_type="text/plain")
+            if request.path == "/download":
+                return web.Response(body=b"\x00\xff\x01", content_type="application/octet-stream")
             if request.path == "/slow":
                 await asyncio.sleep(1.3)
             if request.path == "/redirect":
@@ -160,6 +168,25 @@ class HTTPTests(unittest.IsolatedAsyncioTestCase):
         for path in ["http://other/", "//other/", "/%2e%2e/secret"]:
             result = await self.engine.invoke("ha_request", {"transport": "rest", "operation": path})
             self.assertEqual(result["error"]["code"], "invalid_path")
+
+    async def test_supervisor_text_logs_preserve_auth_and_redaction(self):
+        self.engine.supervisor_url = self.engine.ha_url
+        self.engine.supervisor_token = "test-secret"
+        result = await self.engine.invoke("ha_request", {
+            "transport": "supervisor", "operation": "/core/logs", "params": {"lines": 5}})
+        self.assertTrue(result["ok"], result)
+        self.assertIn("Core started", result["data"])
+        self.assertNotIn("test-secret", result["data"])
+        self.assertEqual(self.calls, ["/core/logs"])
+
+    async def test_generic_http_still_decodes_json_and_binary(self):
+        result = await self.engine.invoke("ha_request", {"requests": [
+            {"transport": "rest", "operation": "/info"},
+            {"transport": "rest", "operation": "/download"}]})
+        self.assertTrue(all(item["ok"] for item in result["data"]))
+        self.assertEqual(result["data"][0]["data"], {"path": "/info"})
+        self.assertEqual(result["data"][1]["data"], {
+            "content_type": "application/octet-stream", "base64": "AP8B"})
 
 
 class AuthTests(unittest.TestCase):
