@@ -1,5 +1,7 @@
 # HA Control
 
+<img src="custom_components/ha_control/brand/icon.png" width="96" alt="HA Control integration"> <img src="addon/icon.png" width="96" alt="HA Control MCP app">
+
 Five generic MCP tools for deep Home Assistant administration, plus a native Home Assistant LLM API and a reusable agent skill. Original Python code; official MCP SDK **2.0.0** runs only in the companion app.
 
 | Tool | Purpose |
