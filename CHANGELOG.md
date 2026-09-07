@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- Original integration and companion brand icons, including local HA brand assets.
 - Public HACS integration and Home Assistant app repository.
 - Prebuilt amd64 GHCR image and release automation with locked dependencies.
 - Automatic discovery supports the repository companion and migration from the local app.
