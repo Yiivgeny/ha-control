@@ -26,3 +26,10 @@ Measured compact SDK `tools/list`: **five tools, 4352 bytes**. A runtime RSS obs
 Config/options flows, script/scene changes, traces and every administrative API were not all individually mutated during acceptance. Dashboard checks validate configuration/readback and references, not every visual card rendering. No physical devices were actuated by acceptance tests.
 
 CI runs the unit suite and builds the HACS archive before publishing a versioned app image and GitHub release. See the repository Actions and Releases for the status of the published version.
+
+
+## Published release 0.2.0
+
+The release was installed through HACS and the companion through this GitHub app repository, using the anonymous-pull GHCR image. The previous local companion was removed after preserving settings and file revisions. The existing native LLM config entry paired automatically with the repository app.
+
+Verified after migration: HACS reports the installed release, the running container uses the published image, integration/runtime source hashes match Git, and both icon/logo endpoints for the integration and app return the published PNGs. Native LLM authorization/bridge checks and live inventory, Recorder, statistics and HTTP analytics passed. Private hostnames, credentials and migration backups remain outside the repository.
