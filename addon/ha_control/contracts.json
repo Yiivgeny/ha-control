@@ -1,0 +1,90 @@
+[
+  {
+    "name": "ha_discover",
+    "description": "Search live HA capabilities or inspect one operation's schema. Scopes: overview, entities, services, websocket, rest, supervisor, profiles. Details are loaded on demand.",
+    "inputSchema": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "scope": {"type": "string", "default": "overview"},
+        "query": {"type": "string", "default": ""},
+        "operation": {"type": "string"},
+        "offset": {"type": "integer", "minimum": 0, "default": 0},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 50}
+      }
+    },
+    "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": true, "openWorldHint": true}
+  },
+  {
+    "name": "ha_request",
+    "description": "Execute one generic request or an ordered non-transactional batch (max 20). Transports: websocket (operation=command, params=fields), rest/supervisor/http (operation=relative path, params=query, body=payload). Discover schemas first. Never retry an uncertain mutation automatically.",
+    "inputSchema": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "transport": {"type": "string", "enum": ["websocket", "rest", "supervisor", "http"]},
+        "operation": {"type": "string"},
+        "params": {"type": "object"},
+        "method": {"type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"], "default": "GET"},
+        "body": {},
+        "profile": {"type": "string"},
+        "content_type": {"type": "string", "default": "application/json"},
+        "timeout": {"type": "number", "minimum": 1, "maximum": 120, "default": 30},
+        "requests": {"type": "array", "minItems": 1, "maxItems": 20, "items": {"type": "object"}}
+      }
+    },
+    "annotations": {"readOnlyHint": false, "destructiveHint": true, "idempotentHint": false, "openWorldHint": true}
+  },
+  {
+    "name": "ha_files",
+    "description": "Manage mounted files. Paths are root/relative; roots: homeassistant, addons, addon_configs, share, media. Actions: list/read/write/patch/move/delete/mkdir/restore. Mutations default to preview; apply=true commits. Existing files require expected_hash. Read returns hash; new files use expected_hash=missing. Restore uses revision_id.",
+    "inputSchema": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action", "path"],
+      "properties": {
+        "action": {"type": "string", "enum": ["list", "read", "write", "patch", "move", "delete", "mkdir", "restore"]},
+        "path": {"type": "string"},
+        "content": {"type": "string"},
+        "edits": {"type": "array", "maxItems": 100, "items": {"type": "object", "required": ["old", "new"], "additionalProperties": false, "properties": {"old": {"type": "string", "minLength": 1}, "new": {"type": "string"}}}},
+        "destination": {"type": "string"},
+        "expected_hash": {"type": "string"},
+        "revision_id": {"type": "string"},
+        "apply": {"type": "boolean", "default": false}
+      }
+    },
+    "annotations": {"readOnlyHint": false, "destructiveHint": true, "idempotentHint": false, "openWorldHint": false}
+  },
+  {
+    "name": "ha_events",
+    "description": "Subscribe/poll/unsubscribe HA event streams. Subscribe defaults to state_changed; entity_ids filters states. Or supply a native WebSocket subscription command and params. Poll uses a sequence cursor; gaps are explicit. Queues are bounded; inactive subscriptions expire after 15 minutes.",
+    "inputSchema": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action"],
+      "properties": {
+        "action": {"type": "string", "enum": ["subscribe", "poll", "unsubscribe"]},
+        "subscription_id": {"type": "string"},
+        "event_type": {"type": "string", "default": "state_changed"},
+        "entity_ids": {"type": "array", "items": {"type": "string"}},
+        "operation": {"type": "string"},
+        "params": {"type": "object"},
+        "cursor": {"type": "integer", "minimum": 0, "default": 0},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 50}
+      }
+    },
+    "annotations": {"readOnlyHint": false, "destructiveHint": false, "idempotentHint": false, "openWorldHint": true}
+  },
+  {
+    "name": "ha_result",
+    "description": "Read a stored result (15-minute TTL). pointer is an RFC6901 JSON Pointer to nested data; offset/limit page arrays, objects or text. fields selects keys of each object. Does not re-execute the original operation.",
+    "inputSchema": {
+      "type": "object", "additionalProperties": false,
+      "required": ["result_id"],
+      "properties": {
+        "result_id": {"type": "string"},
+        "pointer": {"type": "string", "default": ""},
+        "offset": {"type": "integer", "minimum": 0, "default": 0},
+        "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 50},
+        "fields": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "annotations": {"readOnlyHint": true, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false}
+  }
+]

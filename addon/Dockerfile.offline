@@ -1,0 +1,16 @@
+# Deployment fallback: python-rootfs.tar.gz is an export of the pinned official
+# python:3.13.12-slim-bookworm image for the target architecture, not custom code.
+# scratch avoids Supervisor's forced --pull on a host without registry access.
+FROM scratch
+ADD python-rootfs.tar.gz /
+ARG BUILD_VERSION=0.2.0
+ARG BUILD_ARCH=amd64
+LABEL io.hass.version=$BUILD_VERSION io.hass.type="app" io.hass.arch=$BUILD_ARCH
+ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY requirements.lock ./
+COPY wheels /wheels
+RUN python -m pip install --no-cache-dir --no-index --find-links=/wheels -r requirements.lock && rm -rf /wheels
+COPY ha_control ./ha_control
+CMD ["python", "-m", "ha_control.server"]

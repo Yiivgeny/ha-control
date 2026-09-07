@@ -1,0 +1,12 @@
+.local/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+*.egg-info/
+addon/wheels/
+# Instance-only deployment helpers retained locally, never published.
+scripts/remote.py
+scripts/supervisor_job.py
+addon/python-rootfs.tar.gz

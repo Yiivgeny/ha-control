@@ -1,0 +1,44 @@
+name: HA Control MCP
+version: "0.2.0"
+slug: ha_control_mcp
+description: Five generic tools for Home Assistant, Supervisor and configuration
+arch: [amd64]
+startup: services
+boot: auto
+init: false
+homeassistant: "2026.8.1"
+homeassistant_api: true
+hassio_api: true
+hassio_role: admin
+discovery: [ha_control]
+ports:
+  8213/tcp: 8213
+ports_description:
+  8213/tcp: Authenticated MCP and HA integration bridge
+watchdog: http://[HOST]:[PORT:8213]/health
+map:
+  - type: homeassistant_config
+    read_only: false
+  - type: addons
+    read_only: false
+  - type: all_addon_configs
+    read_only: false
+  - type: share
+    read_only: false
+  - type: media
+    read_only: false
+options:
+  mcp_token: ""
+  http_profiles: []
+schema:
+  mcp_token: password
+  http_profiles:
+    - name: str
+      url: url
+      username: str?
+      password: password?
+      bearer_token: password?
+      database: str?
+      description: str?
+url: https://github.com/Yiivgeny/ha-control
+image: ghcr.io/yiivgeny/ha-control-mcp

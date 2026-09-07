@@ -1,0 +1,7 @@
+{
+  "name": "HA Control",
+  "homeassistant": "2026.8.1",
+  "hacs": "2.0.0",
+  "zip_release": true,
+  "filename": "ha_control.zip"
+}
