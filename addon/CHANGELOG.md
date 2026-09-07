@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Fixed Core/journal log reads rejected by Supervisor with HTTP 400: the generic HTTP client accepts all response media types instead of requiring JSON.
+- Kept the five-tool contract and existing JSON/text/binary decoding, authentication, redaction and output limits.
+- No Core restart or integration configuration change is required; update the companion app.
+
 ## 0.2.0
 
 - Original integration and companion brand icons, including local HA brand assets.

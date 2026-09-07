@@ -4,6 +4,8 @@ Start with `ha_discover()` for availability and version. A Core outage does not 
 
 Use `ha_discover(scope="supervisor", query="...")` and `ha_request(transport="supervisor", operation=...)` for system information, resource statistics, logs, apps, backups and lifecycle operations. Supervisor response bodies use their own `result`/`data` fields. Long-running operations may return job IDs; inspect `/jobs/info` instead of resubmitting them.
 
+Read a bounded log snapshot with `ha_request(transport="supervisor", operation="/core/logs", params={"lines":100,"no_colors":""})`; `/supervisor/logs` and `/addons/{slug}/logs` are also available. Log responses are text and use the same output limits, redaction and `ha_result` paging. `content_type` describes a request body, not the expected response. Avoid `/follow` routes in this finite request tool. HA Control app versions before 0.2.1 sent a JSON-only Accept header and could receive HTTP 400 for Core/journal logs; update the companion app if that exact error appears. It does not indicate a Core crash.
+
 Core diagnostics are generic WebSocket/REST operations. Search live commands for `trace`, `repairs`, `system_health`, `diagnostics` or `config_entries`. Retrieve the selected command's schema before using it. Entity state alone does not identify a failing integration; relate the entity to its registry device/config entries, then inspect the relevant diagnostics and logs.
 
 ## Observe state changes
