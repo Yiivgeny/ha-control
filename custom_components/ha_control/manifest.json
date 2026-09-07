@@ -1,0 +1,20 @@
+{
+  "domain": "ha_control",
+  "name": "HA Control",
+  "version": "0.2.0",
+  "config_flow": true,
+  "dependencies": [
+    "websocket_api",
+    "llm",
+    "http",
+    "hassio"
+  ],
+  "codeowners": [
+    "@Yiivgeny"
+  ],
+  "documentation": "https://github.com/Yiivgeny/ha-control",
+  "iot_class": "local_push",
+  "integration_type": "service",
+  "requirements": [],
+  "issue_tracker": "https://github.com/Yiivgeny/ha-control/issues"
+}

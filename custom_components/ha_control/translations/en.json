@@ -1,0 +1,8 @@
+{
+  "title": "HA Control",
+  "config": {
+    "step": {"user": {"title": "Connect HA Control app", "description": "Install and start the local HA Control MCP app, then continue. The internal address and credentials are obtained automatically from Supervisor."}},
+    "error": {"addon_not_ready": "The companion app has not published its discovery yet. Start it and try again."},
+    "abort": {"already_configured": "HA Control is already configured", "cannot_connect": "Cannot authenticate to the companion app", "invalid_server": "Discovery does not describe the local HA Control companion"}
+  }
+}

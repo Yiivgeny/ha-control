@@ -1,0 +1,54 @@
+name: Validate and publish
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r addon/requirements.lock
+      - run: PYTHONPATH=addon python -m unittest discover -s tests -q
+      - run: python scripts/release.py
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: version
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          python3 scripts/release.py --version "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: addon
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/yiivgeny/ha-control-mcp:${{ steps.version.outputs.version }}
+          build-args: |
+            BUILD_VERSION=${{ steps.version.outputs.version }}
+            BUILD_ARCH=amd64
+      - name: Publish HACS release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/ha_control.zip dist/ha_control.zip.sha256 --verify-tag --title "HA Control $GITHUB_REF_NAME" --notes-file CHANGELOG.md

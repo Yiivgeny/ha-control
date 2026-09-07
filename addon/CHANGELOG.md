@@ -1,0 +1,18 @@
+# Changelog
+
+## 0.2.0
+
+- Public HACS integration and Home Assistant app repository.
+- Prebuilt amd64 GHCR image and release automation with locked dependencies.
+- Automatic discovery supports the repository companion and migration from the local app.
+- Removed site-specific addresses and routing from the distributed source and skill.
+- Preserved the five-tool contract, native LLM API, internal Supervisor authorization and automatic bridge identity.
+
+## 0.1.1
+
+- Internal Core/Influx networking and automatic Supervisor-mediated bridge pairing.
+- Removed manually configured HA and bridge tokens.
+
+## 0.1.0
+
+- Initial generic MCP engine, native HA integration, skill and live acceptance checks.
