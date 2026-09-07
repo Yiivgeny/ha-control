@@ -33,3 +33,10 @@ CI runs the unit suite and builds the HACS archive before publishing a versioned
 The release was installed through HACS and the companion through this GitHub app repository, using the anonymous-pull GHCR image. The previous local companion was removed after preserving settings and file revisions. The existing native LLM config entry paired automatically with the repository app.
 
 Verified after migration: HACS reports the installed release, the running container uses the published image, integration/runtime source hashes match Git, and both icon/logo endpoints for the integration and app return the published PNGs. Native LLM authorization/bridge checks and live inventory, Recorder, statistics and HTTP analytics passed. Private hostnames, credentials and migration backups remain outside the repository.
+
+
+## Core log fix 0.2.1
+
+Reproduced HTTP 400 on two HA OS instances running Core 2026.9.1: the journal endpoint rejected `Accept: application/json`, while Supervisor's own logs still worked. Version 0.2.1 sends `Accept: */*` from the shared HTTP engine. The integration adapter and five-tool contract are unchanged.
+
+All 21 unit tests passed locally and in release CI. After repository app updates on both instances, Core, Supervisor, host and app logs returned text successfully; 1000-line Core snapshots were reconstructed through 11 and 13 result pages. The integration bridge also read Core logs. Real Hermes calls confirmed both Core and Supervisor logs without HTTP 400, using only the respective MCP request tools. Core REST, Supervisor JSON and InfluxQL checks remained successful. App settings were preserved, app backups were created, and Core was not restarted.
