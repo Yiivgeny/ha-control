@@ -4,7 +4,7 @@ COPY requirements.lock ./
 RUN python -m pip download --only-binary=:all: -r requirements.lock -d /wheels
 
 FROM python:3.13.12-slim-bookworm
-ARG BUILD_VERSION=0.2.1
+ARG BUILD_VERSION=0.2.2
 ARG BUILD_ARCH=amd64
 LABEL io.hass.version=$BUILD_VERSION io.hass.type="app" io.hass.arch=$BUILD_ARCH
 LABEL org.opencontainers.image.source="https://github.com/Yiivgeny/ha-control"

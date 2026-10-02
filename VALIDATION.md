@@ -1,5 +1,9 @@
 # Validation
 
+## Release 0.2.2 compatibility
+
+On an amd64 instance running the latest stable Core 2026.9.4 and Supervisor 2026.09.3, `ha_discover(scope="overview")` returned live Core metadata and the native HA Control config entry was `loaded`. This verifies the existing runtime on that Core version. Version 0.2.2 Docker images were built locally for both platforms. The ARM64 image was built natively on an ARM64 Docker host; the amd64 image was built and run through emulation. Both started Python and imported the MCP runtime and locked dependencies, with matching `io.hass.arch` and version labels. An ARM Home Assistant OS host has not yet been tested. Release CI repeats the two-platform smoke checks before publishing the multi-architecture image.
+
 The original local deployment was checked on Home Assistant Core 2026.8.1 and 2026.9.1, Supervisor 2026.08.0, HA OS 18.2, amd64. Test counts and hardware results describe completed checks, not a promise that every integration-specific operation has been exercised.
 
 | Agent scenario | Generic operation | Verified result |

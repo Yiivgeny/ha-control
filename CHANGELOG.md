@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Added `aarch64` alongside `amd64` to the Home Assistant app metadata.
+- Release CI builds and smoke-tests both architectures, then publishes a single GHCR multi-architecture image and the HACS archive.
+- Confirmed the existing five-tool MCP and native integration load on Home Assistant Core 2026.9.4, the latest stable release at publication time.
+
 ## 0.2.1
 
 - Fixed Core/journal log reads rejected by Supervisor with HTTP 400: the generic HTTP client accepts all response media types instead of requiring JSON.
