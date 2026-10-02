@@ -14,7 +14,7 @@ The compact `tools/list` response is **4352 bytes**, independent of installed in
 
 ## Install the companion app
 
-Requires Home Assistant OS or Supervised, Core 2026.8.1 or newer, **amd64**. The current release publishes only the architecture tested on hardware.
+Requires Home Assistant OS or Supervised, Core 2026.8.1 or newer, on **amd64 or aarch64**. Core 2026.9.4, the latest stable release at publication time, was checked on a live amd64 instance. Both images were built and smoke-tested locally, including a native ARM64 Docker build. A Home Assistant OS installation on ARM has not yet been tested.
 
 1. Open **Settings → Apps → App store → Repositories** (called Add-ons on older versions).
 2. Add `https://github.com/Yiivgeny/ha-control`.
@@ -83,7 +83,7 @@ PYTHONPATH=addon python -m unittest discover -s tests -q
 python scripts/release.py
 ```
 
-`addon/Dockerfile` downloads locked wheels in a build stage and installs them offline into the runtime image. A `v<version>` Git tag runs the tests, builds/publishes the GHCR image, and attaches `ha_control.zip` to a GitHub release for HACS. Version tags must match the integration and app manifests. Workflows pin actions to commit SHAs.
+`addon/Dockerfile` downloads locked wheels for each target architecture in a build stage and installs them offline into the runtime image. A `v<version>` Git tag runs the tests, builds and smoke-tests both GHCR architectures, publishes a multi-architecture image at `ghcr.io/yiivgeny/ha-control-mcp:<version>`, and attaches `ha_control.zip` to a GitHub release for HACS. Individual `<version>-amd64` and `<version>-aarch64` image tags are also published. Version tags must match the integration and app manifests. Workflows pin actions to commit SHAs.
 
 [Architecture](ARCHITECTURE.md) · [Validation](VALIDATION.md) · [Agent skill](skills/ha-control/SKILL.md) · [Changelog](CHANGELOG.md)
 
