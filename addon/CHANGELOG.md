@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Adapted the native LLM API to Home Assistant Core 2026.11.3: `probatio` tool schemas, explicit tool ownership, administrator-only API metadata and `ToolResult` responses.
+- Preserved the compatibility path for older supported Core versions and the existing five-tool MCP contract.
+- Added an isolated compatibility check in the official Core 2026.11.3 image to release CI.
+
 ## 0.2.2
 
 - Added `aarch64` alongside `amd64` to the Home Assistant app metadata.

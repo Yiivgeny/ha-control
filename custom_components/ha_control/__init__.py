@@ -1,11 +1,9 @@
 """Native HA LLM API adapter; all execution delegates to the companion add-on."""
 
 import asyncio
+import importlib
 import json
 from pathlib import Path
-
-import aiohttp
-import voluptuous as vol
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant
@@ -13,32 +11,48 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, llm
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+import aiohttp
+import voluptuous as vol
+
 from .catalog import catalog_command
 
 DOMAIN = "ha_control"
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 CONTRACTS = json.loads(Path(__file__).with_name("contracts.json").read_text())
+PARAMETER_SCHEMA = (
+    vol
+    if isinstance(llm.Tool.parameters, vol.Schema)
+    else importlib.import_module("probatio")
+)
 
 
 def _parameters(contract):
     properties = {}
     required = contract["inputSchema"].get("required", [])
     for key, spec in contract["inputSchema"]["properties"].items():
-        marker = vol.Required(key) if key in required else vol.Optional(key)
+        marker = PARAMETER_SCHEMA.Required(key) if key in required else PARAMETER_SCHEMA.Optional(key)
         typ = spec.get("type")
-        properties[marker] = {"string": str, "integer": int, "number": vol.Any(int, float), "boolean": bool,
-                             "array": list, "object": dict}.get(typ, object)
-    return vol.Schema(properties)
+        properties[marker] = {
+            "string": str,
+            "integer": int,
+            "number": PARAMETER_SCHEMA.Any(int, float),
+            "boolean": bool,
+            "array": list,
+            "object": dict,
+        }.get(typ, object)
+    return PARAMETER_SCHEMA.Schema(properties)
 
 
 async def _require_admin(hass, context):
-    user_id = context.context.user_id
+    user_id = context.context.user_id if context.context else None
     user = await hass.auth.async_get_user(user_id) if user_id else None
     if user is None or not user.is_admin or not user.is_active:
         raise HomeAssistantError("HA Control requires an authenticated administrator context.")
 
 
 class BridgeTool(llm.Tool):
+    integration = DOMAIN
+
     def __init__(self, entry, contract):
         self.entry = entry
         self.name = contract["name"]
@@ -61,12 +75,15 @@ class BridgeTool(llm.Tool):
         if not data.get("ok"):
             error = data.get("error", {})
             raise HomeAssistantError(json.dumps(error, ensure_ascii=False))
-        return data
+        return llm.ToolResult(data=data) if hasattr(llm, "ToolResult") else data
 
 
 class ControlAPI(llm.API):
     def __init__(self, hass, entry):
-        super().__init__(hass=hass, id=DOMAIN, name="HA Control (administration)")
+        api_args = {"hass": hass, "id": DOMAIN, "name": "HA Control (administration)"}
+        if "requires_admin" in llm.API.__dataclass_fields__:
+            api_args["requires_admin"] = True
+        super().__init__(**api_args)
         self.entry = entry
         self.tools = [BridgeTool(entry, contract) for contract in CONTRACTS]
 

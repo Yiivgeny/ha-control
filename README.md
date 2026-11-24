@@ -16,7 +16,7 @@ The compact `tools/list` response is **4352 bytes**, independent of installed in
 
 ## Install the companion app
 
-Requires Home Assistant OS or Supervised, Core 2026.8.1 or newer, on **amd64 or aarch64**. Core 2026.9.4, the latest stable release at publication time, was checked on a live amd64 instance. Both images were built and smoke-tested locally, including a native ARM64 Docker build. A Home Assistant OS installation on ARM has not yet been tested.
+Requires Home Assistant OS or Supervised, Core 2026.8.1 or newer, on **amd64 or aarch64**. The native integration was checked in the official Core **2026.11.3** image, the latest stable release when this update was prepared. Core 2026.9.4 was checked on a live amd64 instance. Both companion images are built and smoke-tested for each release. A Home Assistant OS installation on ARM has not yet been tested.
 
 1. Open **Settings → Apps → App store → Repositories** (called Add-ons on older versions).
 2. Add `https://github.com/Yiivgeny/ha-control`.

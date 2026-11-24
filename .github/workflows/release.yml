@@ -17,6 +17,11 @@ jobs:
           python-version: '3.13'
       - run: python -m pip install -r addon/requirements.lock
       - run: PYTHONPATH=addon python -m unittest discover -s tests -q
+      - name: Check native LLM API against Home Assistant Core 2026.11.3
+        run: |
+          docker run --rm --platform linux/amd64 --entrypoint python \
+            -v "$PWD:/workspace:ro" -w /workspace -e PYTHONPATH=/workspace \
+            ghcr.io/home-assistant/home-assistant:2026.11.3 tests/core_compat_check.py
       - run: python scripts/release.py
   publish:
     if: startsWith(github.ref, 'refs/tags/v')

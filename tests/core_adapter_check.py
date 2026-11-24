@@ -33,7 +33,8 @@ async def main():
             tool = next(t for t in instance.tools if t.name == "ha_discover")
             with patch("custom_components.ha_control.async_get_clientsession", return_value=session):
                 result = await tool.async_call(hass, llm.ToolInput(tool_name="ha_discover", tool_args={"scope": "overview"}), context)
-            assert result["ok"] and result["data"]["core"]["version"]
+            data = result.data if hasattr(llm, "ToolResult") else result
+            assert data["ok"] and data["data"]["core"]["version"]
             hass.auth.async_get_user.return_value = SimpleNamespace(is_admin=False, is_active=True)
             try:
                 await api.async_get_api_instance(context)

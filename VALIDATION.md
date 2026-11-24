@@ -1,5 +1,9 @@
 # Validation
 
+## Release 0.2.3 compatibility
+
+The native adapter was checked in the official Home Assistant Core 2026.11.3 image. Its five tool schemas convert through Core's `probatio` OpenAPI converter; the API marks itself administrator-only; the tool reports its integration; a bridge call returns `llm.ToolResult`; both a non-admin user and a missing user context are denied. The registered catalog command schema converts completely. Release CI runs this isolated check on the pinned Core image. The companion was built locally for amd64 and aarch64; both images imported the locked runtime successfully, and the aarch64 image passed all 21 unit tests. The HACS archive contains five tools and a 4295-byte contract. These checks do not claim a live Home Assistant OS installation on 2026.11.3.
+
 ## Release 0.2.2 compatibility
 
 On an amd64 instance running the latest stable Core 2026.9.4 and Supervisor 2026.09.3, `ha_discover(scope="overview")` returned live Core metadata and the native HA Control config entry was `loaded`. This verifies the existing runtime on that Core version. Version 0.2.2 Docker images were built locally for both platforms. The ARM64 image was built natively on an ARM64 Docker host; the amd64 image was built and run through emulation. Both started Python and imported the MCP runtime and locked dependencies, with matching `io.hass.arch` and version labels. An ARM Home Assistant OS host has not yet been tested. Release CI repeats the two-platform smoke checks before publishing the multi-architecture image.

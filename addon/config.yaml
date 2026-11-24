@@ -1,5 +1,5 @@
 name: HA Control MCP
-version: "0.2.2"
+version: "0.2.3"
 slug: ha_control_mcp
 description: Five generic tools for Home Assistant, Supervisor and configuration
 arch: [amd64, aarch64]
